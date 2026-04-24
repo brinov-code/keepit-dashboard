@@ -156,6 +156,41 @@ export async function createSale(data: InsertSale): Promise<Sale | null> {
   }
 }
 
+export async function updateSale(id: number, data: Partial<InsertSale>): Promise<Sale | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    await db.update(sales).set(data).where(eq(sales.id, id));
+    const result = await db.select().from(sales).where(eq(sales.id, id)).limit(1);
+    return result[0] || null;
+  } catch (error) {
+    console.error("[Database] Failed to update sale:", error);
+    return null;
+  }
+}
+
+export async function deleteSale(id: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  
+  try {
+    await db.delete(sales).where(eq(sales.id, id));
+    return true;
+  } catch (error) {
+    console.error("[Database] Failed to delete sale:", error);
+    return false;
+  }
+}
+
+export async function getSaleById(id: number): Promise<Sale | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(sales).where(eq(sales.id, id)).limit(1);
+  return result[0] || null;
+}
+
 // Customers queries
 export async function getAllCustomers() {
   const db = await getDb();

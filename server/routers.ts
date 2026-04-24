@@ -10,6 +10,9 @@ import {
   getSalesByExecutive,
   getSalesByMonth_Stats,
   createSale,
+  updateSale,
+  deleteSale,
+  getSaleById,
   getAllCustomers,
   getCustomerStats,
   getAllExecutives,
@@ -33,6 +36,9 @@ export const appRouter = router({
   // Sales routers
   sales: router({
     getAll: publicProcedure.query(() => getAllSales()),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(({ input }) => getSaleById(input.id)),
     getStats: publicProcedure.query(() => getSalesStats()),
     getByExecutive: publicProcedure.query(() => getSalesByExecutive()),
     getByMonth: publicProcedure.query(() => getSalesByMonth_Stats()),
@@ -56,6 +62,38 @@ export const appRouter = router({
           throw new Error("Unauthorized");
         }
         return createSale(input);
+      }),
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          empresa: z.string().optional(),
+          executivo: z.string().optional(),
+          data: z.date().optional(),
+          produto: z.string().optional(),
+          tipo: z.enum(["Ativação", "Renovação"]).optional(),
+          qtd: z.number().int().optional(),
+          valor: z.string().optional(),
+          mensal: z.string().optional(),
+          total: z.string().optional(),
+          month: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") {
+          throw new Error("Unauthorized");
+        }
+        const { id, ...data } = input;
+        return updateSale(id, data);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== "admin") {
+          throw new Error("Unauthorized");
+        }
+        const success = await deleteSale(input.id);
+        return { success };
       }),
   }),
 
