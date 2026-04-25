@@ -1,14 +1,5 @@
 {
   "buildCommand": "pnpm build",
-  "devCommand": "pnpm dev",
   "installCommand": "pnpm install --frozen-lockfile",
-  "framework": null,
-  "outputDirectory": "dist/public",
-  "public": false,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
-    }
-  ]
+  "outputDirectory": "dist"
 }
