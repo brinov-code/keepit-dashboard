@@ -37,10 +37,21 @@ queryClient.getMutationCache().subscribe(event => {
   }
 });
 
+// Determinar URL da API baseado no ambiente
+const getApiUrl = () => {
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:3001/api/trpc';
+  }
+  if (typeof window !== 'undefined' && window.location.hostname === 'keepit-dashboard.vercel.app') {
+    return 'https://keepit-dashboard-api.onrender.com/api/trpc';
+  }
+  return '/api/trpc';
+};
+
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: "/api/trpc",
+      url: getApiUrl(),
       transformer: superjson,
       fetch(input, init) {
         return globalThis.fetch(input, {
