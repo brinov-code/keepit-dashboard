@@ -58,6 +58,7 @@ const trpcClient = trpc.createClient({
       url: apiUrl,
       transformer: superjson,
       fetch(input, init) {
+        console.log('[tRPC] Fetching:', input);
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
@@ -66,6 +67,8 @@ const trpcClient = trpc.createClient({
     }),
   ],
 });
+
+console.log('[tRPC] Client created successfully');
 
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
