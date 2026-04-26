@@ -8,33 +8,62 @@ import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import AdminPanel from "./pages/AdminPanel";
+import Login from "./pages/Login";
+import { useAuth } from "./_core/hooks/useAuth";
+
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  return <Component />;
+}
 
 function Router() {
   return (
     <Switch>
+      <Route path={"/login"} component={Login} />
       <Route path={"/404"} component={NotFound} />
       <Route
         path={"/"}
         component={() => (
-          <DashboardLayout>
-            <Dashboard />
-          </DashboardLayout>
+          <ProtectedRoute
+            component={() => (
+              <DashboardLayout>
+                <Dashboard />
+              </DashboardLayout>
+            )}
+          />
         )}
       />
       <Route
         path={"/customers"}
         component={() => (
-          <DashboardLayout>
-            <Customers />
-          </DashboardLayout>
+          <ProtectedRoute
+            component={() => (
+              <DashboardLayout>
+                <Customers />
+              </DashboardLayout>
+            )}
+          />
         )}
       />
       <Route
         path={"/admin"}
         component={() => (
-          <DashboardLayout>
-            <AdminPanel />
-          </DashboardLayout>
+          <ProtectedRoute
+            component={() => (
+              <DashboardLayout>
+                <AdminPanel />
+              </DashboardLayout>
+            )}
+          />
         )}
       />
       {/* Final fallback route */}

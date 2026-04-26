@@ -4,6 +4,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
+import { validatePassword, setSessionCookie } from "./auth";
 import {
   getAllSales,
   getSalesStats,
@@ -24,6 +25,19 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
+    login: publicProcedure
+      .input(z.object({ password: z.string() }))
+      .mutation(({ input, ctx }) => {
+        if (!validatePassword(input.password)) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Invalid password",
+          });
+        }
+        const user = { id: "user-1", role: "admin" as const };
+        setSessionCookie(ctx.res, ctx.req, user);
+        return user;
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
