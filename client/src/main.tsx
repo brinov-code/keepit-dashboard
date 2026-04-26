@@ -49,10 +49,13 @@ const getApiUrl = () => {
   return '/api/trpc';
 };
 
+const apiUrl = getApiUrl();
+console.log('[tRPC] API URL:', apiUrl);
+
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: getApiUrl(),
+      url: apiUrl,
       transformer: superjson,
       fetch(input, init) {
         return globalThis.fetch(input, {
