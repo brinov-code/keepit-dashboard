@@ -40,10 +40,11 @@ queryClient.getMutationCache().subscribe(event => {
 // Determinar URL da API baseado no ambiente
 const getApiUrl = () => {
   if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return 'http://localhost:3001/api/trpc';
+    return 'http://localhost:3000/api/trpc';
   }
-  if (typeof window !== 'undefined' && window.location.hostname === 'keepit-dashboard.vercel.app') {
-    return 'https://keepit-dashboard-api.onrender.com/api/trpc';
+  // Para produção, usar a URL completa do Render
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api/trpc`;
   }
   return '/api/trpc';
 };
