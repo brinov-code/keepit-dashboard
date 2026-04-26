@@ -37,28 +37,12 @@ queryClient.getMutationCache().subscribe(event => {
   }
 });
 
-// Determinar URL da API baseado no ambiente
-const getApiUrl = () => {
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return 'http://localhost:3000/api/trpc';
-  }
-  // Para produção, usar a URL completa do Render
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/api/trpc`;
-  }
-  return '/api/trpc';
-};
-
-const apiUrl = getApiUrl();
-console.log('[tRPC] API URL:', apiUrl);
-
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: apiUrl,
+      url: "/api/trpc",
       transformer: superjson,
       fetch(input, init) {
-        console.log('[tRPC] Fetching:', input);
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
@@ -67,8 +51,6 @@ const trpcClient = trpc.createClient({
     }),
   ],
 });
-
-console.log('[tRPC] Client created successfully');
 
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
