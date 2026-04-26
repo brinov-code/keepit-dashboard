@@ -1,11 +1,22 @@
 {
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "dist/public",
-  "rewrites": [
+  "functions": {
+    "api/index.ts": {
+      "runtime": "nodejs20.x"
+    },
+    "api/assets.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/assets/(.*)",
+      "dest": "/api/assets.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.ts"
     }
   ]
 }
