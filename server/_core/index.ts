@@ -42,8 +42,17 @@ async function startServer() {
   app.use("/api/trpc", (req, res, next) => {
     if (req.method === "POST" && req.body && typeof req.body === "object") {
       const keys = Object.keys(req.body);
-      if (keys.length === 1 && keys[0] === "0" && req.body[0]?.json) {
-        req.body = req.body[0].json;
+      // Handle batch format: {"0": {"json": {...}}}
+      if (keys.length === 1 && keys[0] === "0" && req.body[0]) {
+        const firstItem = req.body[0];
+        // Extract json if it exists, otherwise use the item directly
+        if (firstItem.json) {
+          req.body = firstItem.json;
+        } else if (firstItem.data) {
+          req.body = firstItem.data;
+        } else {
+          req.body = firstItem;
+        }
       }
     }
     next();
