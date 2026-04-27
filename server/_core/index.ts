@@ -38,6 +38,17 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   // tRPC API
+  // Middleware to convert batch requests to non-batch format
+  app.use("/api/trpc", (req, res, next) => {
+    if (req.method === "POST" && req.body && typeof req.body === "object") {
+      const keys = Object.keys(req.body);
+      if (keys.length === 1 && keys[0] === "0" && req.body[0]?.json) {
+        req.body = req.body[0];
+      }
+    }
+    next();
+  });
+
   app.use(
     "/api/trpc",
     createExpressMiddleware({
