@@ -43,7 +43,7 @@ async function startServer() {
     if (req.method === "POST" && req.body && typeof req.body === "object") {
       const keys = Object.keys(req.body);
       if (keys.length === 1 && keys[0] === "0" && req.body[0]?.json) {
-        req.body = req.body[0];
+        req.body = req.body[0].json;
       }
     }
     next();
