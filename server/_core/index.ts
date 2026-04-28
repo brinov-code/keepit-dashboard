@@ -43,8 +43,8 @@ async function startServer() {
     if (req.method === "POST" && req.body && typeof req.body === "object") {
       const keys = Object.keys(req.body);
       // Handle batch format: {"0": {"json": {...}}}
-      if (keys.length === 1 && keys[0] === "0" && req.body[0]) {
-        const firstItem = req.body[0];
+      if (keys.length === 1 && keys[0] === "0" && req.body["0"]) {
+        const firstItem = req.body["0"];
         // Extract json if it exists, otherwise use the item directly
         if (firstItem.json) {
           req.body = firstItem.json;
